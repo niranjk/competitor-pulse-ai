@@ -1,41 +1,26 @@
-import httpx
-from huggingface_hub import InferenceClient
-from src.config import Config
+import os
+from dotenv import load_dotenv
+from google import genai
 
-class HackathonLLM:
-    def __init__(self):
-        self.provider = Config.LLM_PROVIDER
-        
-        # Initialize the free Hugging Face serverless client
-        if self.provider == "huggingface":
-            if not Config.HF_TOKEN:
-                raise ValueError("HF_TOKEN is missing from your environment variables!")
-            self.client = InferenceClient(token=Config.HF_TOKEN)
-            
-        # Placeholders for easy future integration during a hackathon
-        elif self.provider == "openai":
-            # self.client = OpenAI(api_key=Config.OPENAI_API_KEY)
-            pass
+# Ensure environment variables are loaded
+load_dotenv()
 
-    def generate(self, prompt: str, system_instruction: str = "You are a helpful AI assistant.") -> str:
-        """Universal text generation function."""
-        
-        if self.provider == "huggingface":
-            messages = [
-                {"role": "system", "content": system_instruction},
-                {"role": "user", "content": prompt}
-            ]
-            # Calls the free serverless inference API effortlessly
-            response = self.client.chat_completion(
-                model=Config.HF_MODEL,
-                messages=messages,
-                max_tokens=500
-            )
-            return response.choices[0].message.content
-            
-        elif self.provider == "openai":
-            # Drop-in your quick code for OpenAI when needed
-            return "OpenAI Integration Placeholder"
-            
-        else:
-            raise NotImplementedError(f"Provider '{self.provider}' is not configured yet.")
+def get_gemini_client():
+    """Initializes and returns the official, free-tier Google GenAI client."""
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        raise ValueError("CRITICAL: GEMINI_API_KEY is missing from your .env file.")
+    
+    return genai.Client(api_key=api_key)
+
+def generate_gtm_insight(prompt_content: str) -> str:
+    """Helper method to invoke the lightweight, high-speed gemini-2.5-flash model."""
+    client = get_gemini_client()
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt_content,
+        )
+        return response.text
+    except Exception as e:
+        return f"LLM Execution Error: {str(e)}"
