@@ -1,26 +1,16 @@
 import os
-from dotenv import load_dotenv
-from google import genai
+from langchain_openai import ChatOpenAI
 
-# Ensure environment variables are loaded
-load_dotenv()
-
-def get_gemini_client():
-    """Initializes and returns the official, free-tier Google GenAI client."""
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        raise ValueError("CRITICAL: GEMINI_API_KEY is missing from your .env file.")
-    
-    return genai.Client(api_key=api_key)
-
-def generate_gtm_insight(prompt_content: str) -> str:
-    """Helper method to invoke the lightweight, high-speed gemini-2.5-flash model."""
-    client = get_gemini_client()
-    try:
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=prompt_content,
+class LLMClient:
+    @staticmethod
+    def get_instance(temperature: float = 0.1) -> ChatOpenAI:
+        """Returns a configured LangChain ChatOpenAI instance routed through the AI/ML API Gateway."""
+        # Force wipe backdrop variables before the client initializes
+        os.environ.pop("OPENAI_BASE_URL", None)
+        
+        return ChatOpenAI(
+            base_url="https://aimlapi.com",
+            api_key=os.getenv("AIML_API_KEY", "").strip(),
+            model="gpt-4o",
+            temperature=temperature
         )
-        return response.text
-    except Exception as e:
-        return f"LLM Execution Error: {str(e)}"

@@ -1,9 +1,10 @@
-from typing import List, Dict, Any
-from pydantic import BaseModel, Field
+from typing_extensions import TypedDict
+from typing import List
 
-class HackathonState(BaseModel):
-    """The global state shared across all nodes in our LangGraph."""
-    input_query: str = Field(default="", description="The primary user input or hackathon challenge task.")
-    sub_tasks: List[str] = Field(default_factory=list, description="The list of mapped sub-tasks to run in parallel.")
-    mapped_results: Dict[str, str] = Field(default_factory=dict, description="Parallel processing responses from the LLM.")
-    final_output: str = Field(default="", description="The final compiled solution after the reduce step.")
+class AgentGTMState(TypedDict):
+    competitor_name: str
+    target_url: str
+    raw_scraped_payload: str
+    structured_intelligence: str
+    generated_outreach_sequence: str
+    active_agent_logs: List[str]
