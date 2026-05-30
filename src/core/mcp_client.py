@@ -4,6 +4,7 @@ Provides real-time web search, scraping, and structured data extraction tools
 """
 
 import os
+import json
 import asyncio
 from typing import Optional, List, Dict, Any
 from langchain_mcp_adapters.client import MultiServerMCPClient
@@ -57,14 +58,6 @@ class BrightDataMCPClient:
     async def execute_tool(self, tool_name: str, **kwargs) -> Any:
         """
         Execute a specific Bright Data MCP tool.
-        
-        Available tools typically include:
-        - search_engine: Google/Bing/Yandex search
-        - scrape_as_markdown: Extract webpage content with bot detection bypass
-        - web_data_amazon: Amazon product extraction
-        - web_data_linkedin: LinkedIn profile/company extraction
-        - web_data_instagram: Instagram content extraction
-        - browser_automation: Complex browser interactions
         """
         if not self.mcp_client:
             raise RuntimeError("MCP Client not initialized. Call initialize() first.")
@@ -75,24 +68,25 @@ class BrightDataMCPClient:
             if not tool:
                 raise ValueError(f"Tool '{tool_name}' not found in available tools")
             
-            # Execute the tool - try different method names based on MCP client version
-            result = None
-            try:
-                # Try direct invocation first
-                if hasattr(self.mcp_client, 'call_tool'):
-                    result = await self.mcp_client.call_tool(tool_name=tool_name, **kwargs)
-                elif hasattr(self.mcp_client, 'invoke_tool'):
-                    result = await self.mcp_client.invoke_tool(tool_name=tool_name, **kwargs)
-                elif hasattr(tool, 'invoke'):
-                    result = await tool.invoke(kwargs)
-                else:
-                    # Fallback: just return the tool itself
-                    result = tool
-            except AttributeError:
-                # If call_tool doesn't exist, try calling the tool directly
-                result = await tool.ainvoke(kwargs) if hasattr(tool, 'ainvoke') else await tool(kwargs)
+            print(f"  🔧 Invoking tool: {tool_name} with args: {list(kwargs.keys())}")
             
-            return result
+            # For LangChain tools, use invoke() directly
+            try:
+                result = tool.invoke(kwargs)
+                print(f"  ✓ Tool returned {type(result).__name__}")
+                return result
+            except Exception as e1:
+                print(f"    invoke() failed: {str(e1)}")
+                
+                # Try ainvoke (async)
+                try:
+                    result = await tool.ainvoke(kwargs)
+                    print(f"  ✓ ainvoke returned {type(result).__name__}")
+                    return result
+                except Exception as e2:
+                    print(f"    ainvoke() failed: {str(e2)}")
+                    raise e1
+                    
         except Exception as e:
             print(f"❌ Tool execution failed for '{tool_name}': {str(e)}")
             raise
@@ -173,6 +167,22 @@ Provide structured responses with clear next steps."""
         try:
             available_tools = self.get_available_tools()
             print(f"🔧 Available MCP tools: {available_tools}")
+
+            # Prefer assistant-style tool if available for broader queries
+            if "ask_brightdata_assistant" in available_tools and not results["search_results"]:
+                try:
+                    print("🗣️ Using ask_brightdata_assistant for an initial broad query")
+                    assistant_resp = await self.execute_tool(
+                        "ask_brightdata_assistant",
+                        question=f"Research {company_name}: pricing, hiring, recent news, and strategic moves"
+                    )
+                    assistant_text = self._extract_tool_results(assistant_resp)
+                    if assistant_text:
+                        results["search_results"] = assistant_text
+                        results["raw_research"]["assistant"] = assistant_resp
+                        print(f"✅ Assistant returned {len(assistant_text)} chars")
+                except Exception as e:
+                    print(f"⚠️ Assistant query failed: {str(e)}")
             
             # Step 1: Search for company news and hiring
             if "search_engine" in available_tools:
@@ -181,15 +191,15 @@ Provide structured responses with clear next steps."""
                     search_results = await self.execute_tool(
                         "search_engine",
                         query=f"{company_name} hiring jobs careers 2024 2025",
-                        search_engine="google",
-                        count=10
+                        engine="google"
                     )
                     
                     # Extract text from search results
                     search_text = self._extract_tool_results(search_results)
-                    results["search_results"] = search_text
+                    if search_text:
+                        results["search_results"] = search_text
                     results["raw_research"]["search_engine"] = search_results
-                    print(f"✅ Search results retrieved: {len(search_text)} chars")
+                    print(f"✅ Search results retrieved: {len(search_text) if search_text else 0} chars")
                 except Exception as e:
                     print(f"⚠️ Search failed: {str(e)}")
             
@@ -198,19 +208,18 @@ Provide structured responses with clear next steps."""
                 try:
                     print(f"🔍 Batch searching for {company_name}...")
                     batch_queries = [
-                        f"{company_name} pricing tiers cost",
-                        f"{company_name} recent funding news",
-                        f"{company_name} headcount hiring expansion"
+                        {"query": f"{company_name} pricing tiers cost", "engine": "google"},
+                        {"query": f"{company_name} recent funding news", "engine": "google"},
+                        {"query": f"{company_name} headcount hiring expansion", "engine": "google"}
                     ]
                     batch_results = await self.execute_tool(
                         "search_engine_batch",
-                        queries=batch_queries,
-                        search_engine="google"
+                        queries=batch_queries
                     )
                     
                     batch_text = self._extract_tool_results(batch_results)
                     if batch_text:
-                        results["search_results"] = results["search_results"] + "\n" + batch_text
+                        results["search_results"] = (results["search_results"] or "") + "\n" + batch_text
                     results["raw_research"]["search_engine_batch"] = batch_results
                     print(f"✅ Batch search completed")
                 except Exception as e:
@@ -229,8 +238,7 @@ Provide structured responses with clear next steps."""
                         print(f"💰 Scraping pricing from {url}...")
                         pricing_data = await self.execute_tool(
                             "scrape_as_markdown",
-                            url=url,
-                            wait_for_selector="body"
+                            url=url
                         )
                         
                         pricing_text = self._extract_tool_results(pricing_data)
@@ -255,13 +263,12 @@ Provide structured responses with clear next steps."""
                     
                     batch_scrape_results = await self.execute_tool(
                         "scrape_batch",
-                        urls=scrape_urls,
-                        format="markdown"
+                        urls=scrape_urls
                     )
                     
                     batch_scrape_text = self._extract_tool_results(batch_scrape_results)
                     if batch_scrape_text:
-                        combined = results["search_results"] + "\n" + batch_scrape_text
+                        combined = (results["search_results"] or "") + "\n" + batch_scrape_text
                         results["search_results"] = combined[:5000]  # Limit size
                     results["raw_research"]["scrape_batch"] = batch_scrape_results
                     print(f"✅ Batch scraping completed")
@@ -303,32 +310,56 @@ Provide structured responses with clear next steps."""
             return ""
         
         try:
-            # If it's a string, return it
+            # If it's a ToolCall or tool metadata object, skip it
+            if hasattr(tool_output, 'name') and hasattr(tool_output, 'args_schema'):
+                # This is a tool definition, not a result
+                return ""
+            
+            # If it's a string, return it (but filter out tool metadata strings)
             if isinstance(tool_output, str):
-                return tool_output.strip()
+                text = tool_output.strip()
+                # Skip if it looks like tool metadata
+                if text.startswith("name=") and "args_schema=" in text:
+                    return ""
+                return text
             
             # If it's a dict, try to extract content
             if isinstance(tool_output, dict):
-                # Look for common content keys
-                for key in ["content", "text", "result", "results", "data", "markdown", "html"]:
+                # Look for common result keys
+                for key in ["content", "text", "result", "results", "data", "markdown", "html", "artifact", "artifacts"]:
                     if key in tool_output and tool_output[key]:
                         content = tool_output[key]
                         if isinstance(content, str):
                             return content.strip()
                         elif isinstance(content, list) and len(content) > 0:
-                            return str(content[0])
+                            # If it's a list of dicts, extract text from each
+                            results = []
+                            for item in content:
+                                if isinstance(item, dict):
+                                    # Try common keys for list items
+                                    for item_key in ["snippet", "description", "text", "content", "title"]:
+                                        if item_key in item:
+                                            results.append(str(item[item_key]))
+                                            break
+                                else:
+                                    results.append(str(item))
+                            return "\n".join(results)
                 
                 # If no content found, try to serialize the whole dict
-                return json.dumps(tool_output, indent=2)[:2000]
+                return json.dumps(tool_output, indent=2)[:3000]
             
-            # If it's a list, try to extract from first item
+            # If it's a list, try to extract from items
             if isinstance(tool_output, list):
                 if len(tool_output) > 0:
                     return self._extract_tool_results(tool_output[0])
                 return ""
             
             # Default: convert to string
-            return str(tool_output).strip()
+            text = str(tool_output).strip()
+            # Skip tool metadata
+            if text.startswith("name=") and "args_schema=" in text:
+                return ""
+            return text
         
         except Exception as e:
             print(f"⚠️ Error extracting results: {str(e)}")
