@@ -6,6 +6,82 @@ from src.core.graph import compile_workflow_graph, compile_mcp_workflow_graph
 from src.core.state import AgentGTMState
 from src.config import Config
 
+
+def apply_professional_theme():
+    st.markdown("""
+        <style>
+        :root {
+            --primary: #0066cc;
+            --secondary: #00d4ff;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+        html, body, [data-testid="stAppViewContainer"] {
+            background-color: var(--bg-dark);
+        }
+        .metric-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-dark) 100%);
+            padding: 24px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 102, 204, 0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 16px;
+        }
+        .metric-card:hover { box-shadow: 0 20px 40px rgba(0,102,204,0.2); transform: translateY(-2px); }
+        .metric-value { font-size: 32px; font-weight: 700; color: var(--text-primary); margin: 8px 0; }
+        .metric-label { font-size: 13px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        .stTabs [data-baseweb="tab-list"] button { padding: 12px 24px; border-radius: 6px 6px 0 0; font-weight: 600; border-bottom: 3px solid transparent; transition: all 0.3s ease; color: var(--text-secondary); }
+        .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] { border-bottom-color: var(--primary); color: var(--text-primary); background-color: rgba(0,102,204,0.1); }
+        button { border-radius: 8px; font-weight: 600; transition: all 0.3s ease; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,102,204,0.2); }
+        h1,h2,h3 { color: var(--text-primary); }
+        p,label { color: var(--text-secondary); }
+        [data-testid="stSidebar"] { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-right: 1px solid #334155; }
+        [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 { color: var(--text-primary); font-weight:700; }
+        pre { background: #0f172a; border-left: 4px solid var(--primary); padding: 20px; border-radius: 8px; overflow-x:auto; color: var(--text-primary); }
+        </style>
+    """, unsafe_allow_html=True)
+
+
+def render_status_badge(status: bool, label: str):
+    if status:
+        st.markdown(f"""
+            <div style="display:inline-block;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:8px 16px;border-radius:20px;font-weight:600;font-size:13px;box-shadow:0 4px 12px rgba(16,185,129,0.3);">✓ {label}</div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown(f"""
+            <div style="display:inline-block;background:linear-gradient(135deg,#ef4444 0%,#dc2626 100%);color:white;padding:8px 16px;border-radius:20px;font-weight:600;font-size:13px;box-shadow:0 4px 12px rgba(239,68,68,0.3);">✗ {label}</div>
+        """, unsafe_allow_html=True)
+
+
+def render_json_professional(data: dict):
+    st.markdown(f"""
+        <pre style="background:#0f172a;border-left:4px solid #0066cc;padding:20px;border-radius:8px;overflow-x:auto;color:#f8fafc;font-family:Courier,monospace;font-size:13px;line-height:1.6;">{json.dumps(data, indent=2)}</pre>
+    """, unsafe_allow_html=True)
+
+
+def render_hiring_signals(signals: list):
+    if not signals:
+        st.markdown("<div style='color:#94a3b8'>No hiring signals detected.</div>", unsafe_allow_html=True)
+        return
+    html = """
+    <table style="width:100%;border-collapse:collapse;background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);">
+        <tr style="border-bottom:2px solid #0066cc;">
+            <th style="padding:12px;text-align:left;color:#0066cc;font-weight:600;">Position</th>
+            <th style="padding:12px;text-align:left;color:#0066cc;font-weight:600;">Count</th>
+        </tr>
+    """
+    for i, s in enumerate(signals):
+        bg = '#0f172a' if i % 2 == 0 else '#1e293b'
+        html += f"<tr style='border-bottom:1px solid #334155;background-color:{bg};'><td style='padding:12px;color:#f8fafc'>{s}</td><td style='padding:12px;color:#10b981;font-weight:600'>→</td></tr>"
+    html += "</table>"
+    st.markdown(html, unsafe_allow_html=True)
+
 def apply_ui_theme():
     st.markdown("""
         <style>
