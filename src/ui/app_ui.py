@@ -20,30 +20,238 @@ def apply_professional_theme():
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
         }
-        html, body, [data-testid="stAppViewContainer"] {
-            background-color: var(--bg-dark);
+        
+        * { box-sizing: border-box; }
+        
+        html, body {
+            background-color: #0f172a !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
+        
+        [data-testid="stAppViewContainer"] {
+            background-color: #0f172a !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+        }
+        
+        [data-testid="stMainBlockContainer"] {
+            max-width: 100% !important;
+            width: 100% !important;
+            padding: 0 !important;
+        }
+        
+        .block-container {
+            max-width: 100% !important;
+            padding: 2rem 3rem !important;
+            width: 100% !important;
+        }
+        
+        /* HEADER GRADIENT */
+        .header-gradient {
+            background: linear-gradient(135deg, #0066cc 0%, #00d4ff 100%) !important;
+            padding: 40px !important;
+            border-radius: 12px !important;
+            margin: 0 0 30px 0 !important;
+            box-shadow: 0 20px 60px rgba(0, 102, 204, 0.15) !important;
+            width: 100% !important;
+        }
+        
+        .header-gradient * {
+            color: #ffffff !important;
+        }
+        
+        .header-gradient h1 {
+            color: #ffffff !important;
+            margin: 0 0 12px 0 !important;
+            padding: 0 !important;
+            font-size: 48px !important;
+            font-weight: 800 !important;
+            line-height: 1 !important;
+        }
+        
+        .header-gradient p {
+            color: rgba(255, 255, 255, 0.95) !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 16px !important;
+            font-weight: 500 !important;
+            letter-spacing: 0.3px !important;
+            line-height: 1.5 !important;
+        }
+        
+        /* METRIC CARDS */
         .metric-card {
-            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-dark) 100%);
-            padding: 24px;
-            border-radius: 12px;
-            border-left: 4px solid var(--primary);
-            box-shadow: 0 10px 30px rgba(0, 102, 204, 0.1);
-            transition: all 0.3s ease;
-            margin-bottom: 16px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+            padding: 28px !important;
+            border-radius: 12px !important;
+            border-left: 5px solid #0066cc !important;
+            box-shadow: 0 8px 32px rgba(0, 102, 204, 0.08) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            margin-bottom: 16px !important;
         }
-        .metric-card:hover { box-shadow: 0 20px 40px rgba(0,102,204,0.2); transform: translateY(-2px); }
-        .metric-value { font-size: 32px; font-weight: 700; color: var(--text-primary); margin: 8px 0; }
-        .metric-label { font-size: 13px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
-        .stTabs [data-baseweb="tab-list"] button { padding: 12px 24px; border-radius: 6px 6px 0 0; font-weight: 600; border-bottom: 3px solid transparent; transition: all 0.3s ease; color: var(--text-secondary); }
-        .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] { border-bottom-color: var(--primary); color: var(--text-primary); background-color: rgba(0,102,204,0.1); }
-        button { border-radius: 8px; font-weight: 600; transition: all 0.3s ease; }
-        button:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,102,204,0.2); }
-        h1,h2,h3 { color: var(--text-primary); }
-        p,label { color: var(--text-secondary); }
-        [data-testid="stSidebar"] { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-right: 1px solid #334155; }
-        [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 { color: var(--text-primary); font-weight:700; }
-        pre { background: #0f172a; border-left: 4px solid var(--primary); padding: 20px; border-radius: 8px; overflow-x:auto; color: var(--text-primary); }
+        
+        .metric-card:hover {
+            box-shadow: 0 16px 48px rgba(0, 102, 204, 0.15) !important;
+            transform: translateY(-6px) !important;
+            border-left-color: #00d4ff !important;
+        }
+        
+        .metric-card .metric-label {
+            font-size: 11px !important;
+            color: #7c8fa6 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            font-weight: 700 !important;
+            margin: 0 0 12px 0 !important;
+        }
+        
+        .metric-card .metric-value {
+            font-size: 32px !important;
+            font-weight: 800 !important;
+            color: #f8fafc !important;
+            margin: 0 0 8px 0 !important;
+            letter-spacing: -0.5px !important;
+            line-height: 1 !important;
+        }
+        
+        .metric-card .metric-sublabel {
+            color: #10b981 !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            margin: 8px 0 0 0 !important;
+        }
+        
+        /* EXPANDER STYLING */
+        details {
+            margin: 0 0 20px 0 !important;
+        }
+        
+        summary {
+            background-color: #1e293b !important;
+            border: 1px solid #334155 !important;
+            border-radius: 8px !important;
+            padding: 16px !important;
+            cursor: pointer;
+            list-style: none;
+            transition: all 0.2s ease;
+        }
+        
+        summary:hover {
+            background-color: #273548 !important;
+        }
+        
+        summary::marker {
+            display: none;
+        }
+        
+        summary::before {
+            content: "▶ ";
+            color: #00d4ff !important;
+            margin-right: 8px;
+            display: inline-block;
+            transition: transform 0.2s ease;
+        }
+        
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+        
+        details > *:not(summary) {
+            padding: 16px 0 !important;
+        }
+        
+        /* TABS */
+        .stTabs [data-baseweb="tab-list"] {
+            border-bottom: 1px solid #334155 !important;
+        }
+        
+        .stTabs [data-baseweb="tab-list"] button {
+            padding: 14px 24px !important;
+            font-weight: 600 !important;
+            border-bottom: 2px solid transparent !important;
+            transition: all 0.2s ease !important;
+            color: #94a3b8 !important;
+        }
+        
+        .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
+            border-bottom-color: #0066cc !important;
+            color: #00d4ff !important;
+            background-color: transparent !important;
+        }
+        
+        .stTabs [data-baseweb="tab-list"] button:hover:not([aria-selected="true"]) {
+            color: #c2d0dd !important;
+        }
+        
+        /* BUTTONS */
+        button {
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+            text-transform: none !important;
+        }
+        
+        button:hover {
+            transform: translateY(-2px) !important;
+        }
+        
+        /* SIDEBAR */
+        [data-testid="stSidebar"] {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+            border-right: 1px solid #334155 !important;
+        }
+        
+        [data-testid="stSidebar"] h1,
+        [data-testid="stSidebar"] h2,
+        [data-testid="stSidebar"] h3 {
+            color: #f8fafc !important;
+            font-weight: 700 !important;
+        }
+        
+        /* TEXT ELEMENTS */
+        h1 { color: #f8fafc !important; }
+        h2 { color: #f8fafc !important; }
+        h3 { color: #f8fafc !important; }
+        
+        h2, h3 { margin-top: 28px !important; margin-bottom: 16px !important; }
+        
+        label { color: #94a3b8 !important; }
+        
+        /* INFO/WARNING/ERROR BOXES */
+        [data-testid="stAlert"] {
+            border-radius: 8px !important;
+        }
+        
+        /* CODE BLOCKS */
+        pre {
+            background: #0f172a !important;
+            border-left: 4px solid #0066cc !important;
+            padding: 20px !important;
+            border-radius: 8px !important;
+            color: #f8fafc !important;
+        }
+        
+        /* REMOVE PADDING FROM CONTAINERS */
+        [data-testid="stVerticalBlockContainer"] {
+            padding: 0 !important;
+            gap: 1rem;
+        }
+        
+        [data-testid="stHorizontalBlock"] {
+            padding: 0 !important;
+        }
+        
+        div[data-testid="stMarkdownContainer"] {
+            width: 100%;
+        }
+        
+        /* COLUMNS SPACING */
+        [data-testid="column"] {
+            padding: 0 !important;
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -85,20 +293,67 @@ def render_hiring_signals(signals: list):
 def apply_ui_theme():
     st.markdown("""
         <style>
-        .agent-card { background-color: #0f172a; padding: 22px; border-radius: 12px; border-left: 6px solid #3b82f6; margin-bottom: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        .agent-header { color: #94a3b8; font-size: 13px; margin: 0 0 6px 0; text-transform: uppercase; font-weight: bold;}
-        .agent-title { color: #f8fafc; font-size: 24px; margin: 0 0 5px 0; font-weight: 700; }
-        .status-badge-green { background-color: #065f46; color: #34d399; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 14px; display: inline-block; }
-        .status-badge-red { background-color: #991b1b; color: #fca5a5; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 14px; display: inline-block; }
-        .explain-box { background-color: #1e293b; padding: 15px; border-radius: 8px; border-left: 4px solid #10b981; margin-bottom: 20px; }
+        /* EXPLAIN BOXES */
+        .explain-box {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #10b981;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .explain-box:hover {
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.1);
+        }
+        
+        .explain-box b {
+            color: #00d4ff !important;
+            font-weight: 700;
+        }
+        
+        .explain-box br + br { display: none; }
+        
+        /* STATUS BADGES */
+        .status-badge-green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #f0fdf4 !important;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .status-badge-red {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: #fef2f2 !important;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
         </style>
     """, unsafe_allow_html=True)
 
 def render_dashboard():
     """Main presentation entry point called directly by src/app.py"""
+    st.set_page_config(layout="wide", page_title="PulseAI", page_icon="⚡", initial_sidebar_state="expanded")
+    
+    apply_professional_theme()
     apply_ui_theme()
-    st.title("⚡ PulseAI: Autonomous GTM Intelligence Command Center")
-    st.subheader("Enterprise Multi-Agent Engineering Architecture • Guardrail Protected")
+    
+    # Enhanced header with gradient background
+    st.markdown("""
+        <div class="header-gradient">
+            <h1>⚡ PulseAI</h1>
+            <p>Autonomous GTM Intelligence • Enterprise-Grade • Production Ready</p>
+        </div>
+    """, unsafe_allow_html=True)
     
     # Mode selection in sidebar
     with st.sidebar:
@@ -149,14 +404,31 @@ def render_dashboard():
     ])
 
     with tab1:
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3 = st.columns(3, gap="large")
         with col1:
             status = "🌐 MCP Connected" if use_mcp else "📦 Standard Mode"
-            st.markdown(f'<div class="agent-card"><div class="agent-header">Research Mode</div><div class="agent-title">{status}</div></div>', unsafe_allow_html=True)
+            st.markdown(f'''
+                <div class="metric-card">
+                    <div class="metric-label">🔍 Research Mode</div>
+                    <div class="metric-value">{status}</div>
+                </div>
+            ''', unsafe_allow_html=True)
         with col2:
-            st.markdown('<div class="agent-card"><div class="agent-header">Orchestration Framework</div><div class="agent-title">LangGraph + MCP</div></div>', unsafe_allow_html=True)
+            st.markdown('''
+                <div class="metric-card">
+                    <div class="metric-label">⚙️ Orchestration</div>
+                    <div class="metric-value">LangGraph + MCP</div>
+                    <div class="metric-sublabel">✓ 3-Agent Pipeline</div>
+                </div>
+            ''', unsafe_allow_html=True)
         with col3:
-            st.markdown('<div class="agent-card"><div class="agent-header">Analysis Engine</div><div class="agent-title">AI/ML API (GPT-4o)</div></div>', unsafe_allow_html=True)
+            st.markdown('''
+                <div class="metric-card">
+                    <div class="metric-label">🧠 Analysis</div>
+                    <div class="metric-value">AI/ML API</div>
+                    <div class="metric-sublabel">✓ GPT-4o Powered</div>
+                </div>
+            ''', unsafe_allow_html=True)
 
         st.subheader("📊 Dynamic Headcount Expansion Signals")
         chart_data = pd.DataFrame({
